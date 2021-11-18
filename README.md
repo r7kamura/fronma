@@ -1,5 +1,7 @@
 # fronma
 
+[![test](https://github.com/r7kamura/fronma/actions/workflows/test.yml/badge.svg)](https://github.com/r7kamura/fronma/actions/workflows/test.yml)
+
 [Front Matter](https://jekyllrb.com/docs/front-matter/) parser for Rust.
 
 ## Usage
