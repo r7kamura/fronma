@@ -7,7 +7,7 @@
 ## Usage
 
 ```rust
-use fronma::parse;
+use fronma::parser::parse;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
