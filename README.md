@@ -15,7 +15,6 @@ struct Headers {
   title: String,
 }
 
-
 fn main() {
     let text = r#"---
 title: A
