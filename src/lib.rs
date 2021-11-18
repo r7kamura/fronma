@@ -1,5 +1,5 @@
-mod error;
-mod result;
+pub mod error;
+pub mod result;
 
 use error::Error;
 use result::Result;
@@ -10,7 +10,6 @@ pub struct ParsedData<'a, T: serde::de::DeserializeOwned> {
     pub headers: T,
 }
 
-/// Parse YAML-frontmattered text.
 pub fn parse<T: serde::de::DeserializeOwned>(text: &str) -> Result<ParsedData<T>> {
     let line_pattern = "---\n";
     if !text.starts_with(line_pattern) {
