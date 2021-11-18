@@ -2,6 +2,12 @@
 name = "fronma"
 version = "0.1.0"
 edition = "2018"
+description = "Front Matter parser."
+homepage = "https://github.com/r7kamura/fronma"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/r7kamura/fronma"
+include = ["src/**/*", "LICENSE.txt", "README.md"]
 
 [dependencies]
 serde = "~1.0"
