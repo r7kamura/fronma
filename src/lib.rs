@@ -85,3 +85,6 @@ mod tests {
         assert_eq!(result.body, "dummy_body");
     }
 }
+
+#[cfg(doctest)]
+doc_comment::doctest!("../README.md");
