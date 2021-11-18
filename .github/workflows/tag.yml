@@ -1,0 +1,26 @@
+name: tag
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - Cargo.toml
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - uses: salsify/action-detect-and-tag-new-version@v2
+        id: detect_tag
+        with:
+          create-tag: false
+          version-command: cargo read-manifest | jq -r .version
+      - uses: mathieudutour/github-tag-action@v5.6
+        with:
+          custom_tag: ${{ steps.detect_tag.outputs.current-version }}
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        if: ${{ steps.detect_tag.outputs.previous-version != steps.detect_tag.outputs.current-version }}
