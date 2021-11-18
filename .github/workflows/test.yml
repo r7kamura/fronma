@@ -21,4 +21,4 @@ jobs:
             ~/.cargo/registry/index/
             target/
           key: ${{ runner.os }}-cargo-v1-${{ hashFiles('**/Cargo.lock') }}
-      - run: cargo test
+      - run: cargo test --all-features
