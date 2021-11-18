@@ -2,6 +2,7 @@ use crate::engines::{Engine, Yaml};
 use crate::error::Error;
 use crate::result::Result;
 
+#[cfg(feature = "default")]
 pub fn parse<T>(text: &str) -> Result<ParsedData<T>>
 where
     T: serde::de::DeserializeOwned,
@@ -32,10 +33,11 @@ pub struct ParsedData<'a, T: serde::de::DeserializeOwned> {
     pub headers: T,
 }
 
+#[cfg(feature = "default")]
 #[cfg(test)]
 mod tests {
-    use super::parse;
     use crate::error::Error;
+    use crate::parser::parse;
     use serde::Deserialize;
 
     #[derive(Debug, Deserialize)]
