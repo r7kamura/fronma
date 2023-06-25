@@ -10,7 +10,7 @@ Add this crate as a dependency:
 
 ```toml
 [dependencies]
-fronma = "~0.1"
+fronma = "~0.2"
 ```
 
 then use `fronma::parser::parse` to parse text that has YAML Front Matter:
