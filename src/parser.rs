@@ -15,16 +15,28 @@ where
     T: serde::de::DeserializeOwned,
     E: Engine<T>,
 {
-    let line_pattern = "---\n";
-    if !text.starts_with(line_pattern) {
-        return Err(Error::MissingBeginningLine);
-    }
+    let line_pattern_lf = "---\n";
+    let line_pattern_crlf = "---\r\n";
 
-    let slice = &text[line_pattern.len()..];
-    let index_of_ending_line = slice.find(line_pattern).ok_or(Error::MissingEndingLine)?;
-    let headers = E::parse(&slice[..index_of_ending_line])?;
-    let body = &slice[(index_of_ending_line + line_pattern.len())..];
-    Ok(ParsedData { body, headers })
+    if let Some(slice) = text.strip_prefix(line_pattern_lf) {
+        //let slice = &text[line_pattern_lf.len()..];
+        let index_of_ending_line = slice
+            .find(line_pattern_lf)
+            .ok_or(Error::MissingEndingLine)?;
+        let headers = E::parse(&slice[..index_of_ending_line])?;
+        let body = &slice[(index_of_ending_line + line_pattern_lf.len())..];
+        Ok(ParsedData { body, headers })
+    } else if let Some(slice) = text.strip_prefix(line_pattern_crlf) {
+        //let slice = &text[line_pattern_crlf.len()..];
+        let index_of_ending_line = slice
+            .find(line_pattern_crlf)
+            .ok_or(Error::MissingEndingLine)?;
+        let headers = E::parse(&slice[..index_of_ending_line])?;
+        let body = &slice[(index_of_ending_line + line_pattern_crlf.len())..];
+        Ok(ParsedData { body, headers })
+    } else {
+        Err(Error::MissingBeginningLine)
+    }
 }
 
 #[derive(Debug)]
@@ -60,8 +72,22 @@ mod tests {
     }
 
     #[test]
+    fn parse_with_missing_ending_line_crlf() {
+        let text = "---\r\n";
+        let result = parse::<Headers>(text);
+        assert!(matches!(result, Err(Error::MissingEndingLine)));
+    }
+
+    #[test]
     fn parse_with_empty_frontmatter() {
         let text = "---\n---\n";
+        let result = parse::<Headers>(text);
+        assert!(matches!(result, Err(Error::SerdeYaml(_))));
+    }
+
+    #[test]
+    fn parse_with_empty_frontmatter_crlf() {
+        let text = "---\r\n---\r\n";
         let result = parse::<Headers>(text);
         assert!(matches!(result, Err(Error::SerdeYaml(_))));
     }
@@ -74,8 +100,23 @@ mod tests {
     }
 
     #[test]
+    fn parse_with_missing_known_field_crlf() {
+        let text = "---\r\ndate: 2000-01-01\r\n---\r\n";
+        let result = parse::<Headers>(text);
+        assert!(matches!(result, Err(Error::SerdeYaml(_))));
+    }
+
+    #[test]
     fn parse_with_unknown_field() {
         let text = "---\ndate: 2000-01-01\ntitle: dummy_title\n---\n";
+        let result = parse::<Headers>(text);
+        dbg!(&result);
+        assert!(matches!(result, Ok(_)));
+    }
+
+    #[test]
+    fn parse_with_unknown_field_crlf() {
+        let text = "---\r\ndate: 2000-01-01\r\ntitle: dummy_title\r\n---\r\n";
         let result = parse::<Headers>(text);
         dbg!(&result);
         assert!(matches!(result, Ok(_)));
@@ -90,8 +131,23 @@ mod tests {
     }
 
     #[test]
+    fn parse_with_empty_known_field_crlf() {
+        let text = "---\r\ntitle:\r\n---\r\n";
+        let result = parse::<Headers>(text).unwrap();
+        assert_eq!(result.headers.title, "~");
+        assert_eq!(result.body, "");
+    }
+
+    #[test]
     fn parse_with_valid_frontmatter() {
         let text = "---\ntitle: dummy_title---\ndummy_body";
+        let result = parse::<Headers>(text).unwrap();
+        assert_eq!(result.headers.title, "dummy_title");
+        assert_eq!(result.body, "dummy_body");
+    }
+    #[test]
+    fn parse_with_valid_frontmatter_crlf() {
+        let text = "---\r\ntitle: dummy_title---\r\ndummy_body";
         let result = parse::<Headers>(text).unwrap();
         assert_eq!(result.headers.title, "dummy_title");
         assert_eq!(result.body, "dummy_body");
