@@ -124,7 +124,7 @@ mod tests {
     fn parse_with_empty_known_field() {
         let text = "---\ntitle:\n---\n";
         let result = parse::<Headers>(text).unwrap();
-        assert_eq!(result.headers.title, "~");
+        assert_eq!(result.headers.title, "");
         assert_eq!(result.body, "");
     }
 
@@ -132,7 +132,7 @@ mod tests {
     fn parse_with_empty_known_field_crlf() {
         let text = "---\r\ntitle:\r\n---\r\n";
         let result = parse::<Headers>(text).unwrap();
-        assert_eq!(result.headers.title, "~");
+        assert_eq!(result.headers.title, "");
         assert_eq!(result.body, "");
     }
 
