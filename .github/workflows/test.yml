@@ -10,15 +10,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: chetan/git-restore-mtime-action@v1.1
-      - uses: actions/cache@v2
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/git/db/
-            ~/.cargo/registry/cache/
-            ~/.cargo/registry/index/
-            target/
-          key: ${{ runner.os }}-cargo-v1-${{ hashFiles('**/Cargo.lock') }}
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all --check
+      - run: cargo clippy --all-features --all-targets -- -D warnings
+      - run: cargo build --all-features
       - run: cargo test --all-features
