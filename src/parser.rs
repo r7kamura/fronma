@@ -3,14 +3,14 @@ use crate::error::Error;
 use crate::result::Result;
 
 #[cfg(feature = "default")]
-pub fn parse<T>(text: &str) -> Result<ParsedData<T>>
+pub fn parse<T>(text: &str) -> Result<ParsedData<'_, T>>
 where
     T: serde::de::DeserializeOwned,
 {
     parse_with_engine::<T, Yaml>(text)
 }
 
-pub fn parse_with_engine<T, E>(text: &str) -> Result<ParsedData<T>>
+pub fn parse_with_engine<T, E>(text: &str) -> Result<ParsedData<'_, T>>
 where
     T: serde::de::DeserializeOwned,
     E: Engine<T>,
@@ -109,7 +109,7 @@ mod tests {
         let text = "---\ndate: 2000-01-01\ntitle: dummy_title\n---\n";
         let result = parse::<Headers>(text);
         dbg!(&result);
-        assert!(matches!(result, Ok(_)));
+        assert!(result.is_ok());
     }
 
     #[test]
@@ -117,7 +117,7 @@ mod tests {
         let text = "---\r\ndate: 2000-01-01\r\ntitle: dummy_title\r\n---\r\n";
         let result = parse::<Headers>(text);
         dbg!(&result);
-        assert!(matches!(result, Ok(_)));
+        assert!(result.is_ok());
     }
 
     #[test]
